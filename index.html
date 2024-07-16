@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>Tom_zhao 临时邮箱</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .announcement {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.1em;
+            color: #555;
+        }
+        .loading {
+            text-align: center;
+            font-size: 1.2em;
+            color: #007BFF;
+        }
+        .email {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+            cursor: pointer;
+        }
+        .email:last-child {
+            border-bottom: none;
+        }
+        .email h2 {
+            margin: 0;
+            font-size: 1.2em;
+            color: #007BFF;
+            display: inline-block;
+        }
+        .toggle-button {
+            font-size: 0.9em;
+            color: #007BFF;
+            margin-left: 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .email p {
+            margin: 5px 0;
+            color: #555;
+        }
+        .email .content {
+            display: none;
+            margin-top: 10px;
+            color: #333;
+            white-space: pre-wrap;
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var container = document.querySelector(".container");
+            var loading = document.createElement("div");
+            loading.className = "loading";
+            loading.textContent = "加载中，请稍候...";
+            container.appendChild(loading);
+
+            fetch('load_emails.php')
+                .then(response => response.json())
+                .then(data => {
+                    loading.style.display = 'none';
+                    data.forEach(email => {
+                        var emailDiv = document.createElement("div");
+                        emailDiv.className = "email";
+                        
+                        var emailHeader = document.createElement("h2");
+                        emailHeader.textContent = "邮件 " + email.index;
+                        emailDiv.appendChild(emailHeader);
+                        
+                        var toggleButton = document.createElement("span");
+                        toggleButton.className = "toggle-button";
+                        toggleButton.textContent = "展开";
+                        emailHeader.appendChild(toggleButton);
+                        
+                        var emailSubject = document.createElement("p");
+                        emailSubject.innerHTML = "<strong>主题:</strong> " + email.subject;
+                        emailDiv.appendChild(emailSubject);
+
+                        var emailFrom = document.createElement("p");
+                        emailFrom.innerHTML = "<strong>发件人:</strong> " + email.from;
+                        emailDiv.appendChild(emailFrom);
+
+                        var emailDate = document.createElement("p");
+                        emailDate.innerHTML = "<strong>日期:</strong> " + email.date;
+                        emailDiv.appendChild(emailDate);
+
+                        var emailContent = document.createElement("div");
+                        emailContent.className = "content";
+                        emailContent.innerHTML = "<strong>内容:</strong><br>" + email.content;
+                        emailDiv.appendChild(emailContent);
+
+                        toggleButton.addEventListener("click", function(event) {
+                            event.stopPropagation();
+                            if (emailContent.style.display === "none" || emailContent.style.display === "") {
+                                emailContent.style.display = "block";
+                                toggleButton.textContent = "折叠";
+                            } else {
+                                emailContent.style.display = "none";
+                                toggleButton.textContent = "展开";
+                            }
+                        });
+
+                        container.appendChild(emailDiv);
+                    });
+                })
+                .catch(error => {
+                    loading.textContent = "加载邮件时出错，请稍后重试。";
+                });
+        });
+    </script>
+</head>
+<body>
+<div class="container">
+    <h1>Tom_zhao 临时邮箱</h1>
+    <div class="announcement">
+        <!-- 在此处添加公告内容 -->
+        您可以发送邮件到后缀为@oii.asia的任意邮箱，即可在此处查看收到的邮件<br>目前对html、图片及附件支持不是特别良好，将会在后期版本改进。<br>隐私相关：您的邮件可能会用于训练我们的反垃圾邮件系统。
+    </div>
+</div>
+</body>
+</html>
